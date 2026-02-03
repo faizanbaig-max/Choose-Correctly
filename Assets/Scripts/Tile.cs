@@ -39,12 +39,13 @@ public class Tile : MonoBehaviour, IPointerClickHandler
 
     public void PlayAnimationWithEvent()
     {
-        
+        GameManager.instance.soundManager.PlaySound(SoundClipType.FlipTile);
         animator.Rebind();
         animator.Play("TileFlip", 0);
     }
     public void PlayAnimationWithoutEvent()
     {
+       // GameManager.instance.soundManager.PlaySound(SoundClipType.FlipTile);
         animator.Rebind();
         animator.Play("TileFlip 2nd", 0);
     }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public SoundManager soundManager;
     public List<GameObject> GridSizeSelection;
     public Sprite emptySprite;
     public GridPlacementController gridPlacementController;
@@ -140,6 +141,7 @@ public class GameManager : MonoBehaviour
             //secondTile.gameObject.SetActive(false);
             Destroy(firstTile.gameObject);
             Destroy(secondTile.gameObject);
+            GameManager.instance.soundManager.PlaySound(SoundClipType.matching);
             yield return new WaitForSeconds(0.25f);
             if (CheckRoundComplete())
             {
@@ -149,14 +151,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-
+            GameManager.instance.soundManager.PlaySound(SoundClipType.mismatch);
             firstTile.PlayAnimationWithoutEvent();
             secondTile.PlayAnimationWithoutEvent();
             yield return new WaitForSeconds(0.25f);
             firstTile.Hide();
             secondTile.Hide();
-
-            if(CheckRoundFailed())
+            
+            if (CheckRoundFailed())
             {
                 OnGameFailed?.Invoke();
                 Debug.Log("RoundFailed");
@@ -201,10 +203,12 @@ public class GameManager : MonoBehaviour
 
     public void RoundCompleteFunctionality()
     {
+        GameManager.instance.soundManager.PlaySound(SoundClipType.win);
         RoundCompleteScreen.gameObject.SetActive(true);
     }
     public void RoundFailedFunctionality()
     {
+        GameManager.instance.soundManager.PlaySound(SoundClipType.fail);
         RoundFailedScreen.gameObject.SetActive(true);
     }
 
