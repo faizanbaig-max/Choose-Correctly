@@ -6,11 +6,15 @@ using System.Collections;
 public class Tile : MonoBehaviour, IPointerClickHandler
 {
     private Image image;
+    Animator animator;
+    bool isplaying;
     public TileData tileData { get; private set; }
     public void UpdateImage(TileData tileData)
     {
         if(image==null)
             image = GetComponent<Image>();
+        if (animator == null)
+            animator = GetComponent<Animator>();
         this.tileData = tileData;
         Show();
     }
@@ -24,23 +28,34 @@ public class Tile : MonoBehaviour, IPointerClickHandler
     }
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        GameManager.instance.CheckTile(this);
+       
 
-        ////Use this to tell when the user right-clicks on the Button
-        //if (pointerEventData.button == PointerEventData.InputButton.Right)
-        //{
-        //    //Output to console the clicked GameObject's name and the following message. You can replace this with your own actions for when clicking the GameObject.
-        //    Debug.Log(name + " Game Object Right Clicked!");
-        //}
 
-        //Use this to tell when the user left-clicks on the Button
-        if (pointerEventData.button == PointerEventData.InputButton.Left)
-        {
-            
-        }
+        PlayAnimationWithEvent();
+
+
+
     }
 
-    
+    public void PlayAnimationWithEvent()
+    {
+        
+        animator.Rebind();
+        animator.Play("TileFlip", 0);
+    }
+    public void PlayAnimationWithoutEvent()
+    {
+        animator.Rebind();
+        animator.Play("TileFlip 2nd", 0);
+    }
+
+  
+
+    private void Effect()
+    {
+        GameManager.instance.CheckTile(this);
+        isplaying = false;
+    }
 
 
 

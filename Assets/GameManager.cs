@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -12,7 +13,8 @@ public class GameManager : MonoBehaviour
     private Tile firstTile,secondTile;
     Coroutine ShowEffectCoroutine;
     public GameObject mainmenu, gameplay;
-
+    public TextMeshProUGUI totalTakes;
+    public TextMeshProUGUI TotalPoints;
 
     #region Actions
     
@@ -114,7 +116,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator ShowEffect()
     {
         isPlaying = true;
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
         if (firstTile.tileData.sprite == secondTile.tileData.sprite)
         {
             firstTile.gameObject.SetActive(false);
@@ -123,6 +125,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+
+            firstTile.PlayAnimationWithoutEvent();
+            secondTile.PlayAnimationWithoutEvent();
+            yield return new WaitForSeconds(0.25f);
             firstTile.Hide();
             secondTile.Hide();
         }
