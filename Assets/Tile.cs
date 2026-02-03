@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
 public class Tile : MonoBehaviour, IPointerClickHandler
 {
     private Image image;
@@ -38,6 +39,10 @@ public class Tile : MonoBehaviour, IPointerClickHandler
             
         }
     }
+
+    
+
+
 
 }
 [System.Serializable]

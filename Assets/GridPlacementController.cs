@@ -16,35 +16,30 @@ public class GridPlacementController : MonoBehaviour
     private List<TileData> selectedIndex;
 
 
-
-    private void OnEnable()
+    public void Initilization()
     {
-       GameManager.OnGameStart += CreateGrid;
-    }
 
-    private void OnDisable()
-    {
-        GameManager.OnGameStart -= CreateGrid;
-    }
-
-
-    private void CreateGrid()
-    {
-        if(gridLayoutGroup==null)
+        if (gridLayoutGroup == null)
             gridLayoutGroup = GetComponent<GridLayoutGroup>();
         totalTiles = (int)Mathf.Pow(GameManager.instance.gridSize, 2);
         tileValuePair = new Dictionary<int, int>();
-        for (int i = 0; i < totalTiles/2; i++)
+        for (int i = 0; i < totalTiles / 2; i++)
         {
-            tileValuePair.Add(i,0); 
+            tileValuePair.Add(i, 0);
         }
         UpdateSettings();
         DestroyAvailableTiles();
         CreateNewTiles();
         Debug.Log("Grid Created");
-        Invoke("DisableGridLayout",1f);
-
+        Invoke("DisableGridLayout", 1f);
     }
+
+  
+
+
+
+
+
     private void DisableGridLayout()
     {
         gridLayoutGroup.enabled = false;

@@ -5,11 +5,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public List<GameObject> GridSizeSelection;
     public Sprite emptySprite;
     public GridPlacementController gridPlacementController;
     public int gridSize;
     private Tile firstTile,secondTile;
-    
+    Coroutine ShowEffectCoroutine;
+    public GameObject mainmenu, gameplay;
+
+
     #region Actions
     
     public delegate void IGameAction();
@@ -19,6 +23,48 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+
+    private void OnEnable()
+    {
+        OnGameStart += InitializeRound;
+    }
+
+    private void OnDisable()
+    {
+        OnGameStart -= InitializeRound;
+    }
+
+
+
+
+    public void SelectGridOption(int index)
+    {
+        for (int i = 0; i < GridSizeSelection.Count; i++)
+        {
+            
+            GridSizeSelection[i].SetActive(false);
+        }
+        GridSizeSelection[index].SetActive(true);
+
+        switch (index)
+        {
+            case 0:
+                gridSize = 2;
+                
+                break;
+            case 1:
+                gridSize = 4;
+                
+                break;
+            case 2:
+                gridSize = 6;
+                
+                break;
+
+            default:
+                break;
+        }
+    }
 
 
 
@@ -34,10 +80,13 @@ public class GameManager : MonoBehaviour
 
         }
     }
-      
 
+    private bool isPlaying;
     public void CheckTile(Tile tile)
     {
+        if (isPlaying)
+            return;
+
         if (firstTile == null)
         {
             firstTile = tile;
@@ -52,14 +101,20 @@ public class GameManager : MonoBehaviour
             secondTile.Show();
             
         }
+        if(ShowEffectCoroutine!=null)
+        {
+            StopCoroutine(ShowEffectCoroutine);
+            
+        }
+        ShowEffectCoroutine = StartCoroutine(ShowEffect());
 
-
-        Invoke("ShowEffect",0.5f);
+        
 
     }
-    private void ShowEffect()
+    private IEnumerator ShowEffect()
     {
-
+        isPlaying = true;
+        yield return new WaitForSeconds(0.25f);
         if (firstTile.tileData.sprite == secondTile.tileData.sprite)
         {
             firstTile.gameObject.SetActive(false);
@@ -73,21 +128,35 @@ public class GameManager : MonoBehaviour
         }
         firstTile = null;
         secondTile = null;
+        isPlaying = false;
     }
 
 
     public void StartGame()
     {
+       
+
         OnGameStart?.Invoke();
-        InitializeRound();
     }
 
 
 
     private void InitializeRound()
     {
+        mainmenu.SetActive(false);
+        gameplay.SetActive(true);
+
+        gridPlacementController.Initilization();
+
 
     }
+
+
+    public void ReturnToMainMenu()
+    {
+        mainmenu.SetActive(true);
+        gameplay.SetActive(false);
+    }   
 
 
 
