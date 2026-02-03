@@ -6,7 +6,7 @@ public class Tile : MonoBehaviour, IPointerClickHandler
 {
     private Image image;
     public TileData tileData { get; private set; }
-    private void UpdateImage(TileData tileData)
+    public void UpdateImage(TileData tileData)
     {
         if(image==null)
             image = GetComponent<Image>();

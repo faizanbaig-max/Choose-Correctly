@@ -4,14 +4,24 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+    public Sprite emptySprite;
+    public GridPlacementController gridPlacementController;
+    public int gridSize;
+    private Tile firstTile,secondTile;
+    
+    #region Actions
+    
     public delegate void IGameAction();
     public static event IGameAction OnGameStart;
     public static event IGameAction OnGameComplete;
     public static event IGameAction OnGameSelect;
-    public Sprite emptySprite;
-    public static GameManager instance;
 
-    public Tile firstTile,secondTile;
+    #endregion
+
+
+
+
 
 
     private void Awake()
@@ -56,6 +66,13 @@ public class GameManager : MonoBehaviour
 
 
     }
+
+    public void StartGame()
+    {
+        OnGameStart?.Invoke();
+        InitializeRound();
+    }
+
 
 
     private void InitializeRound()
