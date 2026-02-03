@@ -46,26 +46,35 @@ public class GameManager : MonoBehaviour
         }
         else if (secondTile == null)
         {
+            if(tile== firstTile)
+                return;
             secondTile = tile;
             secondTile.Show();
             
         }
 
-        if(firstTile.tileData.sprite == secondTile.tileData.sprite)
+
+        Invoke("ShowEffect",0.5f);
+
+    }
+    private void ShowEffect()
+    {
+
+        if (firstTile.tileData.sprite == secondTile.tileData.sprite)
         {
             firstTile.gameObject.SetActive(false);
             secondTile.gameObject.SetActive(false);
+
         }
         else
         {
             firstTile.Hide();
             secondTile.Hide();
         }
-
-
-
-
+        firstTile = null;
+        secondTile = null;
     }
+
 
     public void StartGame()
     {

@@ -42,9 +42,13 @@ public class GridPlacementController : MonoBehaviour
         DestroyAvailableTiles();
         CreateNewTiles();
         Debug.Log("Grid Created");
+        Invoke("DisableGridLayout",1f);
 
     }
-    
+    private void DisableGridLayout()
+    {
+        gridLayoutGroup.enabled = false;
+    }
     private TileData GetRandomTileData()
     {
         List<int> keys = new List<int>(tileValuePair.Keys);
@@ -108,6 +112,7 @@ public class GridPlacementController : MonoBehaviour
             tile.UpdateImage(GetRandomTileData());
             tile.Hide();
         }
+        
     }
 
 
