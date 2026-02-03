@@ -27,11 +27,13 @@ public class GridPlacementController : MonoBehaviour
         {
             tileValuePair.Add(i, 0);
         }
+        
         UpdateSettings();
         DestroyAvailableTiles();
         CreateNewTiles();
+        StartCoroutine(ShowAndHide());
         Debug.Log("Grid Created");
-        Invoke("DisableGridLayout", 1f);
+        Invoke("DisableGridLayout", 3f);
     }
 
   
@@ -105,10 +107,34 @@ public class GridPlacementController : MonoBehaviour
             Tile tile = Instantiate(tilePrefab,transform);
             Debug.Log("Tile Created");
             tile.UpdateImage(GetRandomTileData());
+            tile.GetComponent<Image>().raycastTarget = false;
             tile.Hide();
         }
         
     }
+    private IEnumerator ShowAndHide()
+    {
+        for(int i = 0;i < transform.childCount;i++)
+        {
+            Tile tile = transform.GetChild(i).GetComponent<Tile>();
+            tile.Show();
+        }
+        yield return new WaitForSeconds(1.5f);
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Tile tile = transform.GetChild(i).GetComponent<Tile>();
+            tile.PlayAnimationWithoutEvent();
+           
+        }
+        yield return new WaitForSeconds(0.5f);
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Tile tile = transform.GetChild(i).GetComponent<Tile>();
+            tile.Hide();
+            tile.GetComponent<Image>().raycastTarget = true;
+        }
+    }
+
 
 
 

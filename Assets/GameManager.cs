@@ -12,29 +12,27 @@ public class GameManager : MonoBehaviour
     public int gridSize;
     private Tile firstTile,secondTile;
     Coroutine ShowEffectCoroutine;
-    public GameObject mainmenu, gameplay;
-    public TextMeshProUGUI totalTakes;
-    public TextMeshProUGUI TotalPoints;
+    public GameObject mainmenu, gameplay, RoundCompleteScreen, RoundFailedScreen;
+    public TextMeshProUGUI TotalTakesView;
+    public TextMeshProUGUI TotalPointsView;
+    private int totalRemainingTakes=0;
+    private int totalPoints=0;
+    private const string totalPointsStr="TotalPoints";
+
 
     #region Actions
     
     public delegate void IGameAction();
     public static event IGameAction OnGameStart;
     public static event IGameAction OnGameComplete;
-    public static event IGameAction OnGameSelect;
+    public static event IGameAction OnGameFailed;
+
 
     #endregion
 
 
-    private void OnEnable()
-    {
-        OnGameStart += InitializeRound;
-    }
 
-    private void OnDisable()
-    {
-        OnGameStart -= InitializeRound;
-    }
+
 
 
 
@@ -81,6 +79,22 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
 
         }
+        UpdateTotalPoints();
+    }
+
+    private void OnEnable()
+    {
+        OnGameStart += InitializeRound;
+        OnGameComplete += RoundCompleteFunctionality;
+        OnGameFailed += RoundFailedFunctionality;
+    }
+
+    private void OnDisable()
+    {
+        OnGameStart -= InitializeRound;
+        OnGameComplete -= RoundCompleteFunctionality;
+        OnGameFailed -= RoundFailedFunctionality;
+
     }
 
     private bool isPlaying;
@@ -91,6 +105,8 @@ public class GameManager : MonoBehaviour
 
         if (firstTile == null)
         {
+            totalRemainingTakes--;
+            UpdateTotalMoves();
             firstTile = tile;
             firstTile.Show();
             return;    
@@ -109,8 +125,9 @@ public class GameManager : MonoBehaviour
             
         }
         ShowEffectCoroutine = StartCoroutine(ShowEffect());
+      
 
-        
+
 
     }
     private IEnumerator ShowEffect()
@@ -119,9 +136,16 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         if (firstTile.tileData.sprite == secondTile.tileData.sprite)
         {
-            firstTile.gameObject.SetActive(false);
-            secondTile.gameObject.SetActive(false);
-
+            //firstTile.gameObject.SetActive(false);
+            //secondTile.gameObject.SetActive(false);
+            Destroy(firstTile.gameObject);
+            Destroy(secondTile.gameObject);
+            yield return new WaitForSeconds(0.25f);
+            if (CheckRoundComplete())
+            {
+                OnGameComplete?.Invoke();
+                Debug.Log("RoundComplete");
+            }
         }
         else
         {
@@ -131,27 +155,84 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.25f);
             firstTile.Hide();
             secondTile.Hide();
+
+            if(CheckRoundFailed())
+            {
+                OnGameFailed?.Invoke();
+                Debug.Log("RoundFailed");
+            }
+
+
         }
         firstTile = null;
         secondTile = null;
+       
+
+       
         isPlaying = false;
+
     }
 
 
     public void StartGame()
     {
-       
-
+        //totalRemainingTakes = 0;
+        UpdateTotalMoves();
+        UpdateTotalPoints();
         OnGameStart?.Invoke();
     }
+
+    private bool CheckRoundComplete()
+    {
+        Debug.Log("gridPlacementController.transform.childCount" + gridPlacementController.transform.childCount);
+        return gridPlacementController.transform.childCount == 0;
+    }
+
+    private bool CheckRoundFailed()
+    {
+        return totalRemainingTakes <= 0;
+    }
+
+    public void RoundComplete()
+    {
+        
+        StartGame();
+    }
+
+    public void RoundCompleteFunctionality()
+    {
+        RoundCompleteScreen.gameObject.SetActive(true);
+    }
+    public void RoundFailedFunctionality()
+    {
+        RoundFailedScreen.gameObject.SetActive(true);
+    }
+
+
+
+
+
+
+    private void UpdateTotalMoves()
+    {
+        TotalTakesView.text ="Takes: "+ totalRemainingTakes.ToString();
+    }
+
+    private void UpdateTotalPoints()
+    {
+        TotalPointsView.text = "Total Points: "  + PlayerPrefs.GetInt(totalPointsStr).ToString()  ;
+    }
+
 
 
 
     private void InitializeRound()
     {
+        TotalScore(totalRemainingTakes * 2);
         mainmenu.SetActive(false);
         gameplay.SetActive(true);
-
+        totalRemainingTakes = (int)Mathf.Pow(gridSize,2) + gridSize*2;
+        UpdateTotalMoves();
         gridPlacementController.Initilization();
 
 
@@ -165,17 +246,17 @@ public class GameManager : MonoBehaviour
     }   
 
 
-
-
-    // Start is called before the first frame update
-    void Start()
+    private void TotalScore(int score)
     {
-        
-    }
+        if (score < 0)
+            return;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+        totalPoints = PlayerPrefs.GetInt(totalPointsStr) + score;
+        PlayerPrefs.SetInt(totalPointsStr, totalPoints);
+        UpdateTotalPoints();
+
+
+    }    
+
+
 }
